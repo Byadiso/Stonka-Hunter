@@ -3,7 +3,7 @@
 
 **Pest Hunter PRO** is a computer vision application built with **Streamlit** and **YOLOv8** designed to help farmers identify and track the Colorado Potato Beetle (*Leptinotarsa decemlineata*), commonly known as **Stonka**, in real-time.
 
-## ✨ Key Features
+## Key Features
 
 * **AI-Powered Detection:** Uses a custom-trained YOLOv8 model to identify Beetles among 12 different insect classes.
 * **Real-time Analysis:** Support for live camera input directly from the field or image uploads.
@@ -11,7 +11,7 @@
 * **Detection History:** Save identified pests with timestamps and review them in a built-in Gallery tab.
 * **Adaptive Sensitivity:** Adjustable confidence thresholds to ensure detection even in difficult conditions (like frosted leaves).
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Prerequisites
 
@@ -51,27 +51,27 @@ streamlit run script.py
 
 ```
 
-## 🧠 How the AI Works
+## How the AI Works
 
 The model was trained using **YOLOv8n** on a dataset containing 12 insect classes:
 `["Ants", "Bees", "Beetles", "Caterpillars", "Earthworms", "Earwigs", "Grasshoppers", "Moths", "Slugs", "Snails", "Wasps", "Weevils"]`
 
 The app specifically triggers high-priority alerts when **Beetles** are detected, while simply identifying and counting other insect types.
 
-## 🛠️ Built With
+## Built With
 
 * [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) - Real-time Object Detection
 * [Streamlit](https://streamlit.io/) - Web Interface
 * [Open-Meteo API](https://open-meteo.com/) - Weather Data
 * [OpenCV](https://opencv.org/) - Image Processing
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-## 📊 Dataset Attribution
+## Dataset Attribution
 
 The model used in this project was trained on the **AgroPest-12** dataset, which provides high-quality imagery for 12 common crop pests.
 
