@@ -7,9 +7,7 @@ from ultralytics import YOLO
 from streamlit_geolocation import streamlit_geolocation
 from datetime import datetime
 
-# ----------------------------------------------------
-# APP CONFIG
-# ----------------------------------------------------
+
 st.set_page_config(
     page_title="Pest Hunter PRO",
     page_icon="🐞",
@@ -18,14 +16,12 @@ st.set_page_config(
 
 st.title("🐞 Pest Hunter PRO – Stonka AI Detection")
 
-# Create a directory for saving detection history if it doesn't exist
+
 SAVE_DIR = "detections"
 if not os.path.exists(SAVE_DIR):
     os.makedirs(SAVE_DIR)
 
-# ----------------------------------------------------
-# LOAD YOLO MODEL (cached)
-# ----------------------------------------------------
+
 @st.cache_resource
 def load_model():
     MODEL_PATH = "runs/detect/stonka_model3/weights/best.pt"
@@ -43,9 +39,7 @@ def load_model():
 model = load_model()
 class_names = model.names 
 
-# ----------------------------------------------------
-# SIDEBAR SETTINGS
-# ----------------------------------------------------
+
 st.sidebar.header("⚙️ Detection Settings")
 conf_thresh = st.sidebar.slider("Confidence Threshold", 0.05, 1.0, 0.20, help="Lower this if Beetles are being missed.")
 iou_thresh = st.sidebar.slider("IOU Threshold", 0.1, 1.0, 0.45)
@@ -70,9 +64,7 @@ else:
     lat, lon = CITY_COORDS[selected_city]
     location_name = selected_city
 
-# ----------------------------------------------------
-# WEATHER FETCH
-# ----------------------------------------------------
+
 def get_weather(lat, lon):
     try:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
@@ -87,9 +79,7 @@ if current_temp is not None:
 else:
     st.warning("⚠️ Weather service currently unavailable.")
 
-# ----------------------------------------------------
-# IMAGE INPUT
-# ----------------------------------------------------
+
 st.subheader("📸 Field Image Input")
 mode = st.radio("Choose image source:", ["Camera (On-field)", "Upload Image"])
 
@@ -98,13 +88,11 @@ if mode == "Camera (On-field)":
 else:
     image_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
-# ----------------------------------------------------
-# YOLO DETECTION
-# ----------------------------------------------------
+
 if image_file is not None:
     bytes_data = np.frombuffer(image_file.read(), np.uint8)
     img = cv2.imdecode(bytes_data, cv2.IMREAD_COLOR)
-    original_img = img.copy() # Keep a clean copy for saving
+    original_img = img.copy() 
 
     results = model(img, conf=conf_thresh, iou=iou_thresh)
     boxes = results[0].boxes
@@ -119,11 +107,11 @@ if image_file is not None:
         x1, y1, x2, y2 = map(int, box.xyxy[0])
 
         if "Beetle" in label:
-            color = (0, 0, 255) # Red for Stonka
+            color = (0, 0, 255) 
             stonka_count += 1
             display_label = f"⚠️ STONKA {conf:.2f}"
         else:
-            color = (0, 255, 255) # Yellow
+            color = (0, 255, 255) 
             other_insects[label] = other_insects.get(label, 0) + 1
             display_label = f"{label} {conf:.2f}"
 
@@ -131,9 +119,7 @@ if image_file is not None:
         cv2.putText(img, display_label, (x1, max(y1 - 10, 20)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
-    # ------------------------------------------------
-    # OUTPUT & REPORTING
-    # ------------------------------------------------
+    
     st.image(img, channels="BGR", caption=f"Detection Results")
 
     if stonka_count > 0:
@@ -150,23 +136,19 @@ if image_file is not None:
     if stonka_count == 0 and not other_insects:
         st.success("✅ Field looks clear.")
 
-    # ----------------------------------------------------
-    # NEW: SAVE DETECTION FEATURE
-    # ----------------------------------------------------
+  
     st.divider()
     if st.button("💾 Save Detection to History"):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{SAVE_DIR}/detection_{timestamp}.jpg"
         
-        # Draw a small summary box on the image before saving
+       
         summary_text = f"Stonka: {stonka_count} | Temp: {current_temp}C"
         cv2.putText(img, summary_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
         
         cv2.imwrite(filename, img)
         st.success(f"Report saved as {filename}")
 
-# ----------------------------------------------------
-# FOOTER
-# ----------------------------------------------------
+
 st.markdown("---")
 st.caption("Powered by YOLOv8 • Save feature enabled 💾")
