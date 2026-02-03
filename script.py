@@ -1,118 +1,172 @@
 import streamlit as st
+import os
 import cv2
 import numpy as np
-from PIL import Image
-from streamlit_geolocation import streamlit_geolocation
 import requests
+from ultralytics import YOLO
+from streamlit_geolocation import streamlit_geolocation
+from datetime import datetime
 
-# --- APP CONFIG ---
-st.set_page_config(page_title="Stonka Hunter PL", page_icon="🐞")
-st.title("🐞 Stonka Hunter: System Ostrzegania")
+# ----------------------------------------------------
+# APP CONFIG
+# ----------------------------------------------------
+st.set_page_config(
+    page_title="Pest Hunter PRO",
+    page_icon="🐞",
+    layout="centered"
+)
 
-# Coordinates for fallback cities (Poland)
-CITY_COORDS = {
-    "Warszawa": (52.23, 21.01),
-    "Kraków": (50.06, 19.94),
-    "Poznań": (52.41, 16.92),
-    "Wrocław": (51.11, 17.03),
-    "Lublin": (51.25, 22.57),
-    "Białystok": (53.13, 23.16),
-    "Łódź": (51.75, 19.46)
-}
+st.title("🐞 Pest Hunter PRO – Stonka AI Detection")
 
-# --- 1. LOCATION LOGIC ---
-st.sidebar.header("Lokalizacja")
+# Create a directory for saving detection history if it doesn't exist
+SAVE_DIR = "detections"
+if not os.path.exists(SAVE_DIR):
+    os.makedirs(SAVE_DIR)
+
+# ----------------------------------------------------
+# LOAD YOLO MODEL (cached)
+# ----------------------------------------------------
+@st.cache_resource
+def load_model():
+    MODEL_PATH = "runs/detect/stonka_model3/weights/best.pt"
+    try:
+        if os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 1_000_000:
+            st.success("✅ Loaded trained Stonka model")
+            return YOLO(MODEL_PATH)
+        else:
+            raise ValueError("Model file missing or invalid")
+    except Exception as e:
+        st.warning("⚠️ Trained model not usable — falling back to YOLOv8n")
+        st.caption(f"Reason: {e}")
+        return YOLO("yolov8n.pt") 
+
+model = load_model()
+class_names = model.names 
+
+# ----------------------------------------------------
+# SIDEBAR SETTINGS
+# ----------------------------------------------------
+st.sidebar.header("⚙️ Detection Settings")
+conf_thresh = st.sidebar.slider("Confidence Threshold", 0.05, 1.0, 0.20, help="Lower this if Beetles are being missed.")
+iou_thresh = st.sidebar.slider("IOU Threshold", 0.1, 1.0, 0.45)
+
+st.sidebar.divider()
+st.sidebar.header("📍 Location Settings")
 location = streamlit_geolocation()
 
-selected_city = st.sidebar.selectbox("Wybierz miasto (jeśli nie używasz GPS):", list(CITY_COORDS.keys()))
+CITY_COORDS = {
+    "Warsaw": (52.23, 21.01), "Krakow": (50.06, 19.94),
+    "Poznan": (52.41, 16.92), "Wroclaw": (51.11, 17.03),
+    "Lublin": (51.25, 22.57), "Bialystok": (53.13, 23.16),
+    "Lodz": (51.75, 19.46)
+}
 
-# Determine final Lat/Lon
-if location.get('latitude'):
-    lat, lon = location['latitude'], location['longitude']
-    final_city_name = "Twoja lokalizacja (GPS)"
+selected_city = st.sidebar.selectbox("Select City (Manual Fallback)", list(CITY_COORDS.keys()))
+
+if location.get("latitude"):
+    lat, lon = location["latitude"], location["longitude"]
+    location_name = "Your GPS Location"
 else:
     lat, lon = CITY_COORDS[selected_city]
-    final_city_name = selected_city
+    location_name = selected_city
 
-# --- 2. LIVE WEATHER FETCHING ---
-def get_live_weather(lat, lon):
+# ----------------------------------------------------
+# WEATHER FETCH
+# ----------------------------------------------------
+def get_weather(lat, lon):
     try:
-        # Using Open-Meteo (No API Key Required)
         url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
-        response = requests.get(url).json()
-        temp = response['current_weather']['temperature']
-        
-        if temp > 20:
-            advice = "⚠️ ZA GORĄCO dla pyretroidów (np. Decis). Użyj Mospilan."
-        elif temp < 5:
-            advice = "❄️ ZA ZIMNO na opryski. Skuteczność będzie znikoma."
-        else:
-            advice = "✅ WARUNKI OK dla większości środków (optimum 10-20°C)."
-        return temp, advice
+        data = requests.get(url, timeout=5).json()
+        return data["current_weather"]["temperature"]
     except:
-        return None, "❌ Błąd połączenia z serwerem pogodowym."
+        return None
 
-current_temp, advice = get_live_weather(lat, lon)
-
+current_temp = get_weather(lat, lon)
 if current_temp is not None:
-    st.info(f"📍 {final_city_name} | 🌡️ {current_temp}°C\n\n**Rekomendacja:** {advice}")
+    st.info(f"📍 {location_name} | 🌡️ {current_temp}°C")
 else:
-    st.error(advice)
+    st.warning("⚠️ Weather service currently unavailable.")
 
-# --- 3. PHOTO UPLOAD / CAMERA ---
-st.subheader("Ustal stopień zainfekowania")
-upload_mode = st.radio("Źródło zdjęcia:", ["Aparat (Na polu)", "Galeria/Plik"])
+# ----------------------------------------------------
+# IMAGE INPUT
+# ----------------------------------------------------
+st.subheader("📸 Field Image Input")
+mode = st.radio("Choose image source:", ["Camera (On-field)", "Upload Image"])
 
-if upload_mode == "Aparat (Na polu)":
-    img_file = st.camera_input("Zrób zdjęcie liścia ziemniaka")
+if mode == "Camera (On-field)":
+    image_file = st.camera_input("Take a photo of the potato leaf")
 else:
-    img_file = st.file_uploader("Wgraj zdjęcie z pamięci telefonu", type=['jpg', 'png', 'jpeg'])
+    image_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
-# --- 4. PROCESSING ---
-# --- 4. PROCESSING ---
-if img_file is not None:
-    # Convert uploaded file to OpenCV format
-    file_bytes = np.asarray(bytearray(img_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, 1)
-    
-    # 1. Convert to HSV color space for better color isolation
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    
-    # 2. Define the range for 'Stonka' orange/yellow
-    # These values target the typical orange body of the beetle
-    lower_orange = np.array([10, 100, 100]) 
-    upper_orange = np.array([25, 255, 255])
-    
-    # 3. Create a mask and clean up noise (Erosion/Dilation)
-    mask = cv2.inRange(hsv, lower_orange, upper_orange)
-    kernel = np.ones((5, 5), np.uint8)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel) # Removes small noise spots
+# ----------------------------------------------------
+# YOLO DETECTION
+# ----------------------------------------------------
+if image_file is not None:
+    bytes_data = np.frombuffer(image_file.read(), np.uint8)
+    img = cv2.imdecode(bytes_data, cv2.IMREAD_COLOR)
+    original_img = img.copy() # Keep a clean copy for saving
 
-    # 4. Find contours (the 'blobs' of color)
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    
-    # 5. Filter contours by size (ignore tiny dots that aren't beetles)
-    real_pests = []
-    for cnt in contours:
-        area = cv2.contourArea(cnt)
-        if area > 150: # Adjust this number based on photo distance
-            real_pests.append(cnt)
-            # Draw a box around detected pests on the original image
-            x, y, w, h = cv2.boundingRect(cnt)
-            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 3)
+    results = model(img, conf=conf_thresh, iou=iou_thresh)
+    boxes = results[0].boxes
 
-    detected_count = len(real_pests)
+    stonka_count = 0
+    other_insects = {}
+
+    for box in boxes:
+        cls_id = int(box.cls[0])
+        conf = float(box.conf[0])
+        label = class_names[cls_id].title()
+        x1, y1, x2, y2 = map(int, box.xyxy[0])
+
+        if "Beetle" in label:
+            color = (0, 0, 255) # Red for Stonka
+            stonka_count += 1
+            display_label = f"⚠️ STONKA {conf:.2f}"
+        else:
+            color = (0, 255, 255) # Yellow
+            other_insects[label] = other_insects.get(label, 0) + 1
+            display_label = f"{label} {conf:.2f}"
+
+        cv2.rectangle(img, (x1, y1), (x2, y2), color, 3)
+        cv2.putText(img, display_label, (x1, max(y1 - 10, 20)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+
+    # ------------------------------------------------
+    # OUTPUT & REPORTING
+    # ------------------------------------------------
+    st.image(img, channels="BGR", caption=f"Detection Results")
+
+    if stonka_count > 0:
+        st.error(f"🚨 ALERT: {stonka_count} STONKA (BEETLES) DETECTED!")
+        if stonka_count >= 5:
+            st.balloons()
     
-    # Show the processed image with boxes
-    st.image(img, channels="BGR", caption="Wynik analizy obrazu")
-    
-    # --- Logic for Results ---
-    if detected_count > 0:
-        st.error(f"⚠️ UWAGA: Wykryto {detected_count} osobników!")
-        st.write("### Sugerowane działanie (Polska 2026):")
-        st.write("1. **Środek:** Mospilan 20 SP (Acetamipryd)")
-        st.write("2. **Dawka:** 0,08 kg/ha")
-        st.write(f"3. **Temperatura:** Bieżąca temperatura ({current_temp}°C) pozwala na bezpieczny oprysk.")
-    else:
-        st.success("✅ Nie wykryto Stonki ziemniaczanej. Liść wygląda na czysty.")
-        st.write("Monitoruj uprawę regularnie, szczególnie brzegi pola.")
+    if other_insects:
+        st.divider()
+        st.write("🔍 **Other Insects Identified:**")
+        for name, count in other_insects.items():
+            st.write(f"- {name}: {count}")
+        
+    if stonka_count == 0 and not other_insects:
+        st.success("✅ Field looks clear.")
+
+    # ----------------------------------------------------
+    # NEW: SAVE DETECTION FEATURE
+    # ----------------------------------------------------
+    st.divider()
+    if st.button("💾 Save Detection to History"):
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{SAVE_DIR}/detection_{timestamp}.jpg"
+        
+        # Draw a small summary box on the image before saving
+        summary_text = f"Stonka: {stonka_count} | Temp: {current_temp}C"
+        cv2.putText(img, summary_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+        
+        cv2.imwrite(filename, img)
+        st.success(f"Report saved as {filename}")
+
+# ----------------------------------------------------
+# FOOTER
+# ----------------------------------------------------
+st.markdown("---")
+st.caption("Powered by YOLOv8 • Save feature enabled 💾")
