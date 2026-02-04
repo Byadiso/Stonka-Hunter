@@ -1,7 +1,7 @@
 
-# 🐞 Pest Hunter PRO – Stonka AI Detection
+# 🐞 Stonka hunter 
 
-**Pest Hunter PRO** is a computer vision application built with **Streamlit** and **YOLOv8** designed to help farmers identify and track the Colorado Potato Beetle (*Leptinotarsa decemlineata*), commonly known as **Stonka**, in real-time.
+**Stonka hunger** is a computer vision application built with **Streamlit** and **YOLOv8** designed to help farmers identify and track the Colorado Potato Beetle (*Leptinotarsa decemlineata*), commonly known as **Stonka**, in real-time.
 
 ## Key Features
 
@@ -23,8 +23,8 @@
 Clone the repository and install the required dependencies:
 
 ```bash
-git clone https://github.com/your-username/stonka-app.git
-cd stonka-app
+git clone https://github.com/Byadiso/stonka-hunter.git
+cd stonka-hunter
 pip install -r requirements.txt
 
 ```
@@ -56,7 +56,7 @@ streamlit run script.py
 The model was trained using **YOLOv8n** on a dataset containing 12 insect classes:
 `["Ants", "Bees", "Beetles", "Caterpillars", "Earthworms", "Earwigs", "Grasshoppers", "Moths", "Slugs", "Snails", "Wasps", "Weevils"]`
 
-The app specifically triggers high-priority alerts when **Beetles** are detected, while simply identifying and counting other insect types.
+The app specifically triggers high-priority alerts when **Beetles or stonka** are detected, while simply identifying and counting other insect types.
 
 ## Built With
 
