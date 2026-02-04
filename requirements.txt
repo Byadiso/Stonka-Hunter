@@ -1,8 +1,12 @@
-streamlit>=1.30.0
 numpy==1.24.4
+torch==2.1.0+cpu
 opencv-python-headless==4.8.1.78
+ultralytics==8.1.0
 Pillow>=10.0.0
 requests>=2.31.0
+streamlit>=1.30.0
 streamlit-geolocation
-torch==2.1.0+cpu
-ultralytics==8.1.0
+rich==14.3.2
+markdown-it-py==4.0.0
+pygments==2.19.2
+mdurl==0.1.2
