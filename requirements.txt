@@ -1,14 +1,8 @@
-# Core App Framework
-streamlit>=1.30.0
 
-# Computer Vision & AI
+streamlit>=1.30.0
 ultralytics>=8.1.0
 opencv-python-headless>=4.8.0.0
 Pillow>=10.0.0
-
-# Networking & Utilities
 requests>=2.31.0
 numpy>=1.24.0
-
-# Streamlit Components
 streamlit-geolocation
