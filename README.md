@@ -16,7 +16,7 @@
 ### 1. Prerequisites
 
 * Python 3.8+
-* An environment with a webcam (for live mode)
+* An environment with a webcam (for live mode) or image attachment option.
 
 ### 2. Installation
 
