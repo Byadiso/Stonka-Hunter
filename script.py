@@ -8,12 +8,12 @@ from streamlit_geolocation import streamlit_geolocation
 from datetime import datetime
 
 st.set_page_config(
-    page_title="Pest Hunter PRO",
+    page_title="Stonka Hunter",
     page_icon="🐞",
     layout="centered"
 )
 
-st.title("🐞 Pest Hunter PRO – Stonka AI Detection")
+st.title("🐞 Stonka Hunter - Pest Detector")
 
 
 SAVE_DIR = "detections"
@@ -150,4 +150,4 @@ if image_file is not None:
 
 
 st.markdown("---")
-st.caption("Powered by YOLOv8 • Save feature enabled 💾")
+st.caption("Powered by B.D  • Made with curiosity...")
