@@ -66,7 +66,7 @@ if not os.path.exists(SAVE_DIR):
 
 @st.cache_resource
 def load_model():
-    MODEL_PATH = "runs/detect/stonka_model3/weights/best.pt"
+    MODEL_PATH = "runs/detect/stonka_model4/weights/best.pt"
     try:
         if os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 1_000_000:
             return YOLO(MODEL_PATH)
@@ -195,4 +195,4 @@ if image_file is not None:
         st.success(f"Saved to {filename}")
 
 st.markdown("---")
-st.caption("Developed by B.D • Powered by YOLOv8 & Streamlit")
+st.caption("Developed by B.Desire • Powered by YOLOv8 & Streamlit")
