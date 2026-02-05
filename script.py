@@ -6,12 +6,6 @@ import requests
 from ultralytics import YOLO
 from streamlit_geolocation import streamlit_geolocation
 from datetime import datetime
-import sys
-
-st.write("✅ Python version:", sys.version)
-st.write("✅ NumPy version:", np.__version__)
-st.write("✅ OpenCV version:", cv2.__version__)
-
 
 st.set_page_config(
     page_title="Pest Hunter PRO",
