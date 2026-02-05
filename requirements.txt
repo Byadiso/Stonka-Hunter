@@ -1,5 +1,5 @@
 # Remove the constraints file if it's forcing old versions
-numpy==1.24.4
+numpy>=1.26.1
 torch>=2.4.0 --index-url https://download.pytorch.org/whl/cpu
 opencv-python-headless>=4.10.0.84
 ultralytics>=8.3.0
