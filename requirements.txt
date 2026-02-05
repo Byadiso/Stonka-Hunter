@@ -1,4 +1,4 @@
-numpy==1.24.4
+numpy<2
 torch==2.1.0+cpu
 opencv-python-headless==4.8.1.78
 ultralytics==8.1.0
