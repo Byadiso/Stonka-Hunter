@@ -7,14 +7,14 @@ from ultralytics import YOLO
 from streamlit_geolocation import streamlit_geolocation
 from datetime import datetime
 
-# --- UI CONFIGURATION ---
+
 st.set_page_config(
     page_title="Stonka Hunter",
     page_icon="🐞",
     layout="centered"
 )
 
-# Custom CSS for a cleaner look and to fix the geolocation button layout
+
 st.markdown("""
     <style>
     .main { background-color: #f8f9fa; }
@@ -50,7 +50,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- INTRO SECTION ---
+
 st.title("🐞 Stonka Hunter")
 st.markdown("""
 **Stonka-Hunter** is a computer vision application built with **Streamlit** and **YOLOv8**. 
@@ -58,12 +58,12 @@ It is designed to help farmers identify and track the **Colorado Potato Beetle**
 commonly known as **Stonka**, in real-time.
 """)
 
-# --- DIRECTORY SETUP ---
+
 SAVE_DIR = "detections"
 if not os.path.exists(SAVE_DIR):
     os.makedirs(SAVE_DIR)
 
-# --- MODEL LOADING ---
+
 @st.cache_resource
 def load_model():
     MODEL_PATH = "runs/detect/stonka_model3/weights/best.pt"
@@ -79,7 +79,7 @@ def load_model():
 model = load_model()
 class_names = model.names 
 
-# --- SIDEBAR SETTINGS ---
+
 st.sidebar.header("⚙️ Detection Settings")
 conf_thresh = st.sidebar.slider("Confidence Threshold", 0.05, 1.0, 0.10, help="Lower this if Beetles are being missed.")
 iou_thresh = st.sidebar.slider("IOU Threshold", 0.1, 1.0, 0.45)
@@ -87,12 +87,11 @@ iou_thresh = st.sidebar.slider("IOU Threshold", 0.1, 1.0, 0.45)
 st.sidebar.divider()
 st.sidebar.header("📍 Location & Weather")
 
-# --- IMPROVED LOCATION UX ---
-# We create a visual "card" for the button so the user knows what to do
+
 with st.sidebar:
     st.write("🛰️ **Field Geolocation**")
     st.caption("Enable GPS to get local field weather:")
-    # This renders the button. The CSS above hides the phantom text.
+    
     location = streamlit_geolocation()
 
 CITY_COORDS = {
@@ -122,7 +121,7 @@ def get_weather(lat, lon):
 
 current_temp = get_weather(lat, lon)
 
-# --- MAIN DASHBOARD METRICS ---
+
 col1, col2 = st.columns(2)
 with col1:
     st.metric("Location Status", location_name)
@@ -132,7 +131,7 @@ with col2:
     else:
         st.metric("Temperature", "N/A")
 
-# --- IMAGE INPUT ---
+
 st.subheader("📸 Field Image Input")
 mode = st.radio("Choose source:", ["Upload Image", "Camera (On-field)"], horizontal=True)
 
@@ -172,7 +171,7 @@ if image_file is not None:
 
     st.image(img, channels="BGR", use_container_width=True)
 
-    # --- MESSAGING ---
+    
     if stonka_count > 0:
         st.error(f"🚨 **CRITICAL ALERT:** {stonka_count} Stonka Beetle(s) detected!")
         if current_temp is not None and current_temp < 15:
@@ -185,7 +184,7 @@ if image_file is not None:
     else:
         st.success("✅ **Field Clear:** No pests detected.")
 
-    # --- SAVE ---
+
     st.divider()
     if st.button("💾 Save Detection Report"):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
