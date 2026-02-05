@@ -80,7 +80,7 @@ else:
 
 
 st.subheader("📸 Field Image Input")
-mode = st.radio("Choose image source:", ["Camera (On-field)", "Upload Image"])
+mode = st.radio("Choose image source:", ["Upload Image", "Camera (On-field)"])
 
 if mode == "Camera (On-field)":
     image_file = st.camera_input("Take a photo of the potato leaf")
