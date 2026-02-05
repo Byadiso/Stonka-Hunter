@@ -1,11 +1,14 @@
--r constraints.txt
-torch==2.1.0+cpu
-opencv-python-headless==4.8.1.78
-ultralytics==8.1.0
+# Remove the constraints file if it's forcing old versions
+numpy==1.24.4
+torch>=2.4.0 --index-url https://download.pytorch.org/whl/cpu
+opencv-python-headless>=4.10.0.84
+ultralytics>=8.3.0
 Pillow>=10.0.0
 requests>=2.31.0
 streamlit>=1.30.0
 streamlit-geolocation
+# The packages below are now part of the standard Streamlit environment
+# but you can keep them if you need specific versions
 rich==14.3.2
 markdown-it-py==4.0.0
 pygments==2.19.2
