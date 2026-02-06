@@ -2,6 +2,7 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-v1.30-orange.svg)](https://streamlit.io/)
 [![YOLOv8](https://img.shields.io/badge/YOLOv8-v8.0-red.svg)](https://ultralytics.com/)
 [![Last Commit](https://img.shields.io/github/last-commit/Byadiso/Stonka-Hunter)](https://github.com/Byadiso/Stonka-Hunter/commits/main)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/Byadiso/Stonka-Hunter/python-app.yml?branch=main)](https://github.com/Byadiso/Stonka-Hunter/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
