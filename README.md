@@ -7,7 +7,7 @@
 
 
 
-# 🐞 Stonka hunter 
+# Stonka hunter 
 
 **Stonka hunger** is a computer vision application built with **Streamlit** and **YOLOv8** designed to help farmers identify and track the Colorado Potato Beetle (*Leptinotarsa decemlineata*), commonly known as **Stonka**, in real-time.
 
