@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import cv2
 import numpy as np
+import pandas as pd
 import requests
 from ultralytics import YOLO
 from streamlit_geolocation import streamlit_geolocation
@@ -17,6 +18,9 @@ st.set_page_config(
     page_icon="🐞",
     layout="centered"
 )
+
+results_trained = pd.read_csv("runs/detect/stonka_model4/results.csv")
+epochs = len(results_trained)
 
 
 st.markdown("""
@@ -217,4 +221,7 @@ with tab_history:
     show_history_tab()
 
 st.markdown("---")
-st.caption("Developed by B.Desire • Powered by YOLOv8 & Streamlit")
+# st.caption("Developed by B.Desire • Powered by YOLOv8 Model • Trained for {EPOCHS} & Streamlit")
+st.caption(
+    f"Developed by B.Desire • Powered by YOLOv8 Model • Trained for {epochs} Epochs • Streamlit"
+)
