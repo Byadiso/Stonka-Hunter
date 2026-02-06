@@ -78,7 +78,7 @@ The app specifically triggers high-priority alerts when **Beetles or stonka** ar
 ## Demo
 
 Here’s a live detection example from the app:
-
+[![Stonka-Hunter Demo](assets/demo_detection2.png)](assets/demo_detection2.png)
 [![Stonka-Hunter Demo](assets/demo_detection.png)](assets/demo_detection.png)
 
 ## License
