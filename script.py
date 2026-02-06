@@ -19,17 +19,17 @@ st.markdown("""
     <style>
     .main { background-color: #f8f9fa; }
     
-    /* Fix for the Geolocation Button: Removing the weird 'Text' gap */
+    
     div[data-testid="stVerticalBlock"] div.stButton button {
         width: 100%;
     }
     
-    /* Target the specific container of the geolocation icon to remove the label space */
+    
     .st-emotion-cache-1offfwp {
         display: none !important;
     }
 
-    /* Styling the metric cards */
+    
     [data-testid="stMetricValue"] {
         color: #1f77b4 !important;
         font-weight: bold;
@@ -38,7 +38,7 @@ st.markdown("""
         color: #555555 !important;
     }
     
-    /* Custom container for the location button to give it context */
+    
     .geo-box {
         background-color: #ffffff;
         border: 1px solid #e0e0e0;
@@ -175,7 +175,7 @@ if image_file is not None:
     if stonka_count > 0:
         st.error(f"🚨 **CRITICAL ALERT:** {stonka_count} Stonka Beetle(s) detected!")
         if current_temp is not None and current_temp < 15:
-            st.warning("ℹ️ **Biotech Note:** Temp < 15°C. Beetle activity is low and pesticide efficacy may vary.")
+            st.warning("ℹ️ **Note:** Temp < 15°C. Beetle activity is low and pesticide efficacy may vary.")
     elif other_insects:
         st.warning("💡 **Field Observation:** No Stonka found, but other species detected.")
         with st.expander("Show Biodiversity Details"):
