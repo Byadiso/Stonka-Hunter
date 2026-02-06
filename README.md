@@ -73,6 +73,12 @@ The app specifically triggers high-priority alerts when **Beetles or stonka** ar
 * [Open-Meteo API](https://open-meteo.com/) - Weather Data
 * [OpenCV](https://opencv.org/) - Image Processing
 
+## Demo
+
+Here’s a live detection example from the app:
+
+[![Stonka-Hunter Demo](assets/demo_detection.png)](assets/demo_detection.png)
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
