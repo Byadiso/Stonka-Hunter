@@ -1,3 +1,8 @@
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-v1.30-orange.svg)](https://streamlit.io/)
+[![YOLOv8](https://img.shields.io/badge/YOLOv8-v8.0-red.svg)](https://ultralytics.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 # 🐞 Stonka hunter 
 
