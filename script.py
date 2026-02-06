@@ -7,6 +7,10 @@ from ultralytics import YOLO
 from streamlit_geolocation import streamlit_geolocation
 from datetime import datetime
 
+from recommendations import generate_recommendations
+from history_view import show_history_tab
+
+
 
 st.set_page_config(
     page_title="Stonka Hunter",
@@ -58,6 +62,9 @@ It is designed to help farmers identify and track the **Colorado Potato Beetle**
 commonly known as **Stonka**, in real-time.
 """)
 
+tab_detect, tab_history = st.tabs(
+    ["🧪 Live Detection", "📂 Detection History"]
+)
 
 SAVE_DIR = "detections"
 if not os.path.exists(SAVE_DIR):
@@ -183,6 +190,18 @@ if image_file is not None:
                 st.write(f"- **{name}**: {count}")
     else:
         st.success("✅ **Field Clear:** No pests detected.")
+    
+    st.subheader("Smart Farmer Recommendations")
+
+    advice = generate_recommendations(
+            stonka_count=stonka_count,
+            temperature=current_temp
+        )
+
+    with st.expander("🌱 View Recommended Actions"):
+        for tip in advice:
+            st.write(f"- {tip}")
+
 
 
     st.divider()
@@ -193,6 +212,9 @@ if image_file is not None:
         cv2.putText(img, summary_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
         cv2.imwrite(filename, img)
         st.success(f"Saved to {filename}")
+
+with tab_history:
+    show_history_tab()
 
 st.markdown("---")
 st.caption("Developed by B.Desire • Powered by YOLOv8 & Streamlit")
